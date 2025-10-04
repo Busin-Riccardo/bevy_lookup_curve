@@ -45,6 +45,7 @@ The [`animation`](https://github.com/villor/bevy_lookup_curve/tree/main/examples
 ## Bevy support
 |bevy|bevy_lookup_curve|
 |---|---|
+|0.17|0.10|
 |0.16|0.9|
 |0.15|0.6-0.8|
 |0.14|0.3-0.5|

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.10.0] - 04-Oct-2025
+
+- Update to Bevy 0.17 🥳
+- Improve examples and docs
+- `Knot::compute_bezier_to` is now exposed. See the new `console` example for how its useful.
+- [BREAKING] Made the `LookupCurve` type leaner and more focused:
+  - Removed the `name` field. Editors will now use the file path as title if they have one.
+  - Removed the `max_iters` and `max_error` options for weighted cubic interpolation. These can now be passed in during lookup instead of being stored on a specific curve. See `LookupCurve::lookup_advanced`.
+
+### Updated
+- bevy to `0.17`
+- ron to `0.10`
+- bevy_egui to `0.37`
+- egui to `0.32`
+- bevy_inspector_egui to `0.34`
+- egui_plot to `0.33`
+
 ## [0.9.0] - 05-May-2025
 
 Bevy 0.16 🥳
