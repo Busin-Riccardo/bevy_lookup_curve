@@ -91,6 +91,8 @@ fn animate(
         };
 
         // update x position using the curve
+        // using a cache may improve performance of coherent lookups if the curve has many knots
+        // but as always, if you want to ensure optimal performance, benchmark and see what works best for your use case
         transform.translation.x = animate.from
             + (animate.to - animate.from) * curve.lookup_cached(animate.t, &mut animate.cache);
 

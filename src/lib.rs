@@ -21,7 +21,9 @@ pub mod prelude {
     pub use crate::editor::LookupCurveEditor;
     #[cfg(feature = "editor_egui")]
     pub use crate::editor::LookupCurveEguiEditor;
-    pub use crate::{Knot, KnotInterpolation, LookupCache, LookupCurve, Tangent, TangentMode};
+    pub use crate::{
+        Knot, KnotInterpolation, LookupCache, LookupCurve, LookupOptions, Tangent, TangentMode,
+    };
 }
 
 /// Registers the asset loader and editor components
@@ -150,6 +152,7 @@ pub struct Knot {
     /// Identifier used by editor operations because index might change during modification
     ///
     /// There should not be any need to change this as it will be set internally.
+    #[doc(hidden)]
     #[cfg_attr(
         feature = "serialize",
         serde(skip_serializing, default = "unique_knot_id")
@@ -262,11 +265,32 @@ impl LookupCache {
     }
 }
 
-const fn max_iters_default() -> u8 {
-    20
+/// Options for advanced lookup in a [LookupCurve]. See [LookupCurve::lookup_advanced]
+#[derive(Debug)]
+pub struct LookupOptions<'a> {
+    /// Optional cache to speed up coherent lookups. Might slow down random lookups.
+    pub cache: Option<&'a mut LookupCache>,
+    /// Max number of iterations used for Newton-Rhapson iteration in weighted cubic segments.
+    ///
+    /// The default is `20`.
+    pub max_iters: u8,
+    /// Max error allowed before breaking Newton-Rhapson iteration in weighted cubic segments.
+    ///
+    /// The default is `1e-5`.
+    pub max_error: f32,
 }
-const fn max_error_default() -> f32 {
-    1e-5
+
+pub(crate) const DEFAULT_LOOKUP_OPTIONS: LookupOptions = LookupOptions {
+    cache: None,
+    max_iters: 20,
+    max_error: 1e-5,
+};
+
+impl Default for LookupOptions<'_> {
+    #[inline]
+    fn default() -> Self {
+        DEFAULT_LOOKUP_OPTIONS
+    }
 }
 
 /// Two-dimensional spline that only allows a single y-value per x-value
@@ -274,39 +298,9 @@ const fn max_error_default() -> f32 {
 #[cfg_attr(feature = "serialize", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "bevy_reflect", derive(bevy_reflect::Reflect))]
 #[cfg_attr(feature = "bevy_asset", derive(bevy_asset::Asset))]
+#[derive(Default)]
 pub struct LookupCurve {
     knots: Vec<Knot>,
-
-    /// Max number of iterations used for Newton-Rhapson iteration in weighted cubic segments
-    #[cfg_attr(
-        feature = "serialize",
-        serde(skip_serializing, default = "max_iters_default")
-    )]
-    #[cfg_attr(
-        feature = "bevy_reflect",
-        reflect(skip_serializing, default = "max_iters_default")
-    )]
-    pub max_iters: u8,
-    /// Max error allowed before breaking Newton-Rhapson iteration in weighted cubic segments
-    #[cfg_attr(
-        feature = "serialize",
-        serde(skip_serializing, default = "max_error_default")
-    )]
-    #[cfg_attr(
-        feature = "bevy_reflect",
-        reflect(skip_serializing, default = "max_error_default")
-    )]
-    pub max_error: f32,
-}
-
-impl Default for LookupCurve {
-    fn default() -> Self {
-        Self {
-            knots: vec![],
-            max_iters: max_iters_default(),
-            max_error: max_error_default(),
-        }
-    }
 }
 
 impl LookupCurve {
@@ -318,22 +312,7 @@ impl LookupCurve {
                 .expect("NaN is not allowed")
         });
 
-        Self {
-            knots,
-            ..Default::default()
-        }
-    }
-
-    /// Consumes the curve and returns it with max_iters set to the new value
-    pub fn with_max_iters(mut self, max_iters: u8) -> Self {
-        self.max_iters = max_iters;
-        self
-    }
-
-    /// Consumes the curve and returns it with max_errors set to the new value
-    pub fn with_max_error(mut self, max_error: f32) -> Self {
-        self.max_error = max_error;
-        self
+        Self { knots }
     }
 
     #[cfg(feature = "ron")]
@@ -432,17 +411,25 @@ impl LookupCurve {
     /// Find y for given x on the curve
     #[inline]
     pub fn lookup(&self, x: f32) -> f32 {
-        self.lookup_internal(x, None)
+        self.lookup_advanced(x, DEFAULT_LOOKUP_OPTIONS)
     }
 
-    /// Find y for given x on the curve, with a LookupCache. Can speed up coherent lookups, but might slow down random lookups.
+    /// Find y for given x on the curve, using a [LookupCache].
+    ///
+    /// Using a cache may improve performance of coherent lookups if the curve has many knots.
+    /// But as always, if you want to ensure optimal performance, benchmark and see what works best for your use case
     #[inline]
     pub fn lookup_cached(&self, x: f32, cache: &mut LookupCache) -> f32 {
-        self.lookup_internal(x, Some(cache))
+        let options = LookupOptions {
+            cache: Some(cache),
+            ..DEFAULT_LOOKUP_OPTIONS
+        };
+        self.lookup_advanced(x, options)
     }
 
+    /// Find y for given x on the curve, with [`LookupOptions`] for caching and weighted cubic interpolation.
     #[inline]
-    fn lookup_internal(&self, x: f32, cache: Option<&mut LookupCache>) -> f32 {
+    pub fn lookup_advanced(&self, x: f32, options: LookupOptions) -> f32 {
         // Return repeated constant values outside of knot range
         if self.knots.is_empty() {
             return 0.0;
@@ -455,7 +442,7 @@ impl LookupCurve {
         }
 
         // Find left knot
-        let i = if let Some(cache) = cache {
+        let i = if let Some(cache) = options.cache {
             self.knots
                 .search_knots_with_cache(x, &mut cache.last_knot_index)
         } else {
@@ -474,7 +461,7 @@ impl LookupCurve {
             KnotInterpolation::Cubic => {
                 let knot_b = &self.knots[i + 1];
                 if knot_a.right_tangent.weight.is_some() || knot_b.left_tangent.weight.is_some() {
-                    weighted_cubic_interp(&knot_a, knot_b, x, self.max_error, self.max_iters)
+                    weighted_cubic_interp(&knot_a, knot_b, x, options.max_error, options.max_iters)
                 } else {
                     unweighted_cubic_interp(&knot_a, knot_b, x)
                 }
