@@ -11,7 +11,7 @@ version = "0.9.0"
 edition = "2024"
 
 [features]
-default = ['editor_bevy', 'bevy_reflect']
+default = ['editor_bevy']
 serialize = ['dep:serde', 'bevy_math/serialize']
 ron = ['serialize', 'dep:ron', 'dep:thiserror']
 bevy_reflect = [
@@ -81,7 +81,7 @@ path = "examples/console.rs"
 [[example]]
 name = "animation"
 path = "examples/animation.rs"
-required-features = ["editor_egui"]
+required-features = ["editor_bevy"]
 
 [[example]]
 name = "egui_only"

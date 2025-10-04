@@ -27,7 +27,9 @@ If you have used AnimationCurve in Unity, this would be an attempt at something 
 https://github.com/villor/bevy_lookup_curve/assets/7102243/180aed95-ca9a-4e3b-97c4-2516055ea648
 
 ## Usage
-See [examples](https://github.com/villor/bevy_lookup_curve/tree/main/examples) for now
+See [examples](https://github.com/villor/bevy_lookup_curve/tree/main/examples) for now.
+
+The [`animation`](examples/animation.rs) example demonstrates how to both use and edit a curve in a Bevy app.
 
 ## Feature flags
 |Feature|Default|Description|
