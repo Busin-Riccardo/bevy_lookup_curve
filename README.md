@@ -24,12 +24,12 @@ If you have used AnimationCurve in Unity, this would be an attempt at something 
 - [x] `egui`-based editor
 - [x] Integration with [bevy-inspector-egui](https://github.com/jakobhellermann/bevy-inspector-egui) for quick and easy tweaking
 
-https://github.com/villor/bevy_lookup_curve/assets/7102243/180aed95-ca9a-4e3b-97c4-2516055ea648
+<https://github.com/villor/bevy_lookup_curve/assets/7102243/180aed95-ca9a-4e3b-97c4-2516055ea648>
 
 ## Usage
 See [examples](https://github.com/villor/bevy_lookup_curve/tree/main/examples) for now.
 
-The [`animation`](examples/animation.rs) example demonstrates how to both use and edit a curve in a Bevy app.
+The [`animation`](https://github.com/villor/bevy_lookup_curve/tree/main/examples/animation.rs) example demonstrates how to both use and edit a curve in a Bevy app.
 
 ## Feature flags
 |Feature|Default|Description|

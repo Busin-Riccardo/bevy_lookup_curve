@@ -1,6 +1,8 @@
+#![doc = include_str!("../README.md")]
 use bevy_math::{Curve, Vec2, curve::Interval};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+#[doc(hidden)]
 pub mod knot_search;
 use knot_search::KnotSearch;
 
@@ -50,6 +52,7 @@ impl bevy_app::Plugin for LookupCurvePlugin {
     }
 }
 
+/// Errors that can occur when loading a [`LookupCurve`] from a RON file
 #[cfg(feature = "ron")]
 #[non_exhaustive]
 #[derive(Debug, thiserror::Error)]
@@ -62,6 +65,7 @@ pub enum LookupCurveLoadError {
     RonSpannedError(#[from] ron::error::SpannedError),
 }
 
+/// Errors that can occur when saving a [`LookupCurve`] to a RON file
 #[cfg(feature = "ron")]
 #[non_exhaustive]
 #[derive(Debug, thiserror::Error)]
@@ -169,6 +173,7 @@ fn unique_knot_id() -> usize {
     KNOT_ID_COUNTER.fetch_add(1, Ordering::Relaxed)
 }
 
+/// Specifies which tangent of a [Knot] to target for some operations.
 #[derive(Copy, Clone, Hash)]
 pub enum TangentSide {
     Left,

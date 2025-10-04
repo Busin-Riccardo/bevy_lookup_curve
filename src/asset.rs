@@ -1,3 +1,4 @@
+//! Contains the asset loader plugin for `LookupCurve` assets.
 use bevy_app::{App, Plugin};
 use bevy_asset::{AssetApp, AssetLoader, LoadContext, io::Reader};
 

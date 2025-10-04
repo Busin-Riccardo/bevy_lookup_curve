@@ -1,3 +1,4 @@
+//! Contains editor implementations for `LookupCurve`s.
 mod editor_egui;
 pub use editor_egui::*;
 
