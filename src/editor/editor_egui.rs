@@ -1,6 +1,6 @@
 use bevy_math::Vec2;
 use egui::{
-    Color32, Frame, Id, Painter, Pos2, Rect, Sense, Shape, Stroke, Ui, emath,
+    Color32, Frame, Id, Painter, Pos2, Rect, Sense, Shape, Stroke, Ui, WidgetText, emath,
     epaint::CubicBezierShape,
 };
 
@@ -114,15 +114,14 @@ impl LookupCurveEguiEditor {
         &mut self,
         ctx: &mut egui::Context,
         id: impl std::hash::Hash,
+        title: impl Into<WidgetText>,
         curve: &mut LookupCurve,
         sample: Option<f32>,
     ) -> bool {
         let mut changed = false;
-        egui::Window::new(curve.name_or_default())
-            .id(Id::new(id))
-            .show(ctx, |ui| {
-                changed = self.ui(ui, curve, sample);
-            });
+        egui::Window::new(title).id(Id::new(id)).show(ctx, |ui| {
+            changed = self.ui(ui, curve, sample);
+        });
         changed
     }
 

@@ -53,11 +53,17 @@ fn lookup_curve_editor_ui(
     mut curves: ResMut<Assets<LookupCurve>>,
 ) -> Result {
     for (entity, mut editor) in &mut editors {
+        let title = editor
+            .egui_editor
+            .ron_path
+            .as_deref()
+            .unwrap_or("Lookup curve")
+            .to_string();
         if let Some(curve) = curves.get_mut(&editor.curve_handle) {
             let sample = editor.sample;
             editor
                 .egui_editor
-                .ui_window(contexts.ctx_mut()?, entity, curve, sample);
+                .ui_window(contexts.ctx_mut()?, entity, title, curve, sample);
         }
     }
     Ok(())

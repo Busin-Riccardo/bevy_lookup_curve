@@ -182,8 +182,7 @@ fn lookup_curve_miniature(curve: &LookupCurve, id: egui::Id, ui: &mut egui::Ui) 
                 )
             };
 
-            let line =
-                egui_plot::Line::new(curve.name_or_default(), points).color(egui::Color32::GREEN);
+            let line = egui_plot::Line::new("Lookup curve", points).color(egui::Color32::GREEN);
             plot_ui.line(line);
         });
 
@@ -214,7 +213,7 @@ fn lookup_curve_miniature_with_edit(
     let mut changed = false;
     if let Some(editor_state) = editor_state {
         let mut open = true;
-        egui::Window::new(curve.name_or_default())
+        egui::Window::new("Lookup curve")
             .id(id.with("window"))
             .open(&mut open)
             .show(ui.ctx(), |ui| {

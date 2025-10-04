@@ -36,6 +36,5 @@
         mode: Aligned,
       ),
     ),
-  ],
-  name: Some("Asset curve")
+  ]
 )

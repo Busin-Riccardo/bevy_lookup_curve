@@ -42,7 +42,7 @@ fn setup(mut commands: Commands, assets: Res<AssetServer>) {
 
     commands.insert_resource(LookupCurveDevState {
         curve_handle: handle,
-        curve_noasset: LookupCurve::default().with_name("Not asset"),
+        curve_noasset: LookupCurve::default(),
         sample_dir: 1.0,
         sample: 0.0,
         move_sample: true,
