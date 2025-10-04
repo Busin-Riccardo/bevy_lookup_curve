@@ -1,4 +1,4 @@
-use bevy_math::{curve::Interval, Curve, Vec2};
+use bevy_math::{Curve, Vec2, curve::Interval};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub mod knot_search;
@@ -12,6 +12,17 @@ pub mod editor;
 
 #[cfg(feature = "inspector-egui")]
 mod inspector;
+
+/// Re-exports of the most commonly used items for convenience
+pub mod prelude {
+    #[cfg(feature = "bevy_app")]
+    pub use crate::LookupCurvePlugin;
+    #[cfg(feature = "editor_bevy")]
+    pub use crate::editor::LookupCurveEditor;
+    #[cfg(feature = "editor_egui")]
+    pub use crate::editor::LookupCurveEguiEditor;
+    pub use crate::{Knot, KnotInterpolation, LookupCache, LookupCurve, Tangent, TangentMode};
+}
 
 /// Registers the asset loader and editor components
 #[cfg(any(
@@ -202,8 +213,9 @@ impl Knot {
         knot
     }
 
+    /// Computes the bezier control points from this knot to `knot_b`.
     #[inline]
-    fn compute_bezier_to(&self, knot_b: &Knot) -> [Vec2; 4] {
+    pub fn compute_bezier_to(&self, knot_b: &Knot) -> [Vec2; 4] {
         let slope_a = self.right_tangent.slope;
         let weight_a = self.right_tangent.weight.unwrap_or(1. / 3.);
         let slope_b = knot_b.left_tangent.slope;

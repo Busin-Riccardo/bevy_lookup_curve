@@ -8,7 +8,7 @@ documentation = "https://docs.rs/bevy_lookup_curve"
 repository = "https://github.com/villor/bevy_lookup_curve"
 readme = "README.md"
 version = "0.9.0"
-edition = "2021"
+edition = "2024"
 
 [features]
 default = ['editor_bevy', 'bevy_reflect']
@@ -37,39 +37,46 @@ inspector-egui = [
 ]
 
 [dependencies]
-bevy_math = { version = "0.16", default-features = false, features = ["curve"] }
-bevy_reflect = { version = "0.16", default-features = false, optional = true }
-bevy_app = { version = "0.16", default-features = false, optional = true }
-bevy_ecs = { version = "0.16", default-features = false, optional = true }
-bevy_asset = { version = "0.16", optional = true }
-bevy_log = { version = "0.16", default-features = false, optional = true }
-bevy_winit = { version = "0.16", default-features = false, optional = true }
+bevy_math = { version = "0.17", default-features = false, features = [
+    "std",
+    "curve",
+] }
+bevy_reflect = { version = "0.17", default-features = false, optional = true }
+bevy_app = { version = "0.17", default-features = false, optional = true }
+bevy_ecs = { version = "0.17", default-features = false, optional = true }
+bevy_asset = { version = "0.17", optional = true }
+bevy_log = { version = "0.17", default-features = false, optional = true }
+bevy_winit = { version = "0.17", default-features = false, optional = true }
 
 thiserror = { version = "2", optional = true }
 serde = { version = "1", optional = true }
-ron = { version = "0.8", optional = true }
+ron = { version = "0.10", optional = true }
 
-egui = { version = "0.31", optional = true }
-bevy_egui = { version = "0.34", default-features = false, features = [
+egui = { version = "0.32", optional = true }
+bevy_egui = { version = "0.37", default-features = false, features = [
     "render",
 ], optional = true }
 
-bevy-inspector-egui = { version = "0.31", optional = true, default-features = false, features = [
+bevy-inspector-egui = { version = "0.34", optional = true, default-features = false, features = [
     "bevy_render",
 ] }
-egui_plot = { version = "0.32", optional = true }
+egui_plot = { version = "0.33", optional = true }
 
 [dev-dependencies]
-bevy = "0.16"
-bevy-inspector-egui = { version = "0.31" }
+bevy = "0.17"
+bevy-inspector-egui = "0.34"
 criterion = "0.5.1"
-rand = "0.8"
-eframe = "0.31"
+rand = "0.9"
+eframe = "0.32"
 
 [[example]]
 name = "dev"
 path = "examples/dev.rs"
 required-features = ["editor_bevy", "bevy_reflect"]
+
+[[example]]
+name = "console"
+path = "examples/console.rs"
 
 [[example]]
 name = "animation"
