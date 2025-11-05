@@ -52,7 +52,7 @@ thiserror = { version = "2", optional = true }
 serde = { version = "1", optional = true }
 ron = { version = "0.10", optional = true }
 
-egui = { version = "0.32", optional = true }
+egui = { version = "0.33", optional = true }
 bevy_egui = { version = "0.38", default-features = false, features = [
     "render",
 ], optional = true }
